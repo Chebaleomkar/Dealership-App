@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { Card, CardContent,  CardHeader, CardTitle } from "@/components/ui/card"
+import { Heading } from "@/components/Heading"
 
 interface Product {
   productId: string
@@ -139,6 +140,7 @@ export default function BillForm() {
 
   return (
     <div className="container mx-auto p-4 max-w-4xl">
+      <Heading title='Create Bill' description='generate bill for customer' />
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl font-bold">Create Bill</CardTitle>
