@@ -1,21 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
-import {
-    File,
-    Home,
-    LineChart,
-    ListFilter,
-    MoreHorizontal,
-    Package,
-    Package2,
-    PanelLeft,
-    PlusCircle,
-    Search,
-    Settings,
-    ShoppingCart,
-    Users2,
-} from "lucide-react"
-
+import {File,ListFilter,MoreHorizontal,PlusCircle,Search,} from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import {
     Breadcrumb,
@@ -44,7 +29,6 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
-
 import {
     Table,
     TableBody,
@@ -63,7 +47,6 @@ import {
 const Dashboard = () => {
     return (
         <div className="flex min-h-screen w-full flex-col bg-muted/40">
-        
             <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
                 <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
                     <Breadcrumb className="hidden md:flex">
@@ -160,9 +143,9 @@ const Dashboard = () => {
                                 </Button>
                                 <Button size="sm" className="h-8 gap-1">
                                     <PlusCircle className="h-3.5 w-3.5" />
-                                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                                        Add Product
-                                    </span>
+                                    <Link href={`/dashboard/create-bill`} className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                                        Create Bill
+                                    </Link>
                                 </Button>
                             </div>
                         </div>
