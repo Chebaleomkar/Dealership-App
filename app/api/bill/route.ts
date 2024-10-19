@@ -11,6 +11,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req:NextRequest){
     try{
+        await connectDB();
         const bills = await BillModel.find();
         if(!bills){
             return NextResponse.json({message : "No Bills Found"} , {status : 404});
@@ -45,10 +46,10 @@ export async function POST(req: NextRequest) {
             warrantyEnd.setMonth(warrantyEnd.getMonth() + product.warrantyPeriodMonths);
 
             // Generate serial number
-            const serialNumber = generateSerialNumber({category: product.category});
+            const serialNumber = generateSerialNumber({ category: product.category });
 
-            // Generate Barcode for the serial number
-            barcodeImage = generateBarcode(serialNumber); // Generate the barcode as base64
+            // Generate Barcode for the serial number (inside the map, unique for each product)
+            const barcodeImage = generateBarcode(serialNumber); // Generate the barcode as base64
 
             return {
                 ...product,
@@ -75,6 +76,7 @@ export async function POST(req: NextRequest) {
         await bill.save();
         return NextResponse.json({ message: 'Bill created successfully',barcodeImage ,  bill ,  });
     } catch (error) {
+        console.log(error)
         return NextResponse.json({ message: 'Internal Server Error'  , error});
     }
 }

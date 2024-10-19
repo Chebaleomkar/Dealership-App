@@ -4,7 +4,7 @@ export default function Home() {
       {/* Header Section */}
       <header className="bg-gray-900 text-white py-6">
         <div className="container mx-auto px-4">
-          <h1 className="text-4xl font-bold text-center">MS Computer Shope</h1>
+          <h1 className="text-4xl font-bold text-center">Computer Shope</h1>
           <p className="text-center text-lg mt-2">Your Trusted Partner for Computer Components</p>
         </div>
       </header>

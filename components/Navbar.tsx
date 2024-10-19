@@ -11,7 +11,7 @@ const Navbar = () => {
             <nav className=" p-4">
                 <div className="container mx-auto text-white flex justify-between items-center">
                     <div>
-                        <h1 className="text-2xl font-bold">MS Computer Shope</h1>
+                        <h1 className="text-2xl font-bold"> Computer Shope</h1>
                         <p className="text-sm">Your Trusted Partner for Computer Components</p>
                     </div>
                 </div>

@@ -45,6 +45,8 @@ const formSchema = z.object({
       quantity: z.number().min(1, "Quantity must be at least 1"),
       warrantyStart: z.date(),
       warrantyEnd: z.date(),
+      warrantyPeriodMonths : z.number(),
+      category : z.string()
     })
   ),
 });
@@ -58,9 +60,9 @@ export default function BillForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      customerName: "John Doe",
-      phoneNo: "9876543210",
-      email: "john2.doe@example.com",
+      customerName: "Sumit Bubane ",
+      phoneNo: "1599634587",
+      email: "sumit@gmail.com",
       products: [],
     },
   });
@@ -74,6 +76,8 @@ export default function BillForm() {
       totalPrice: 0,
       warrantyStart: new Date(),
       warrantyEnd: new Date(),
+      warrantyPeriodMonths : 0,
+      category:'',
     }]);
   };
 
@@ -93,6 +97,8 @@ export default function BillForm() {
           totalPrice: updatedProducts[index].quantity * product.price,
           warrantyStart: new Date(),
           warrantyEnd: warrantyEndDate,
+          warrantyPeriodMonths : product.warrantyPeriodMonths,
+          category : product.category
         };
       }
     } else if (field === "quantity") {
@@ -132,6 +138,8 @@ export default function BillForm() {
         productName: product.productName, // Add productName for the API
         price: product.price,
         totalPrice: product.totalPrice,
+        warrantyPeriodMonths : product.warrantyPeriodMonths,
+        category : product.category
       })),
     };
 
