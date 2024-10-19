@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/tooltip"
 import { Home, LineChart, Package, Package2, Settings, ShoppingCart, Users2 } from 'lucide-react';
 import Link from 'next/link';
+import { ThemeToggle } from './ThemeToggle';
 
 const Sidebar = () => {
     return (

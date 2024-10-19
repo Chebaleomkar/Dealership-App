@@ -12,7 +12,9 @@ const customerSchema = new mongoose.Schema(
         },
         email: {
             type: String,
+            required:true,
         },
+        billNos: [{ type: String }]
     },
     {
         timestamps: true,

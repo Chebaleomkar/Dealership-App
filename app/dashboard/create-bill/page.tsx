@@ -1,11 +1,12 @@
-"use client"
-import { useState, useEffect } from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-import {  Trash2 } from "lucide-react"
+"use client"; // Use client-side rendering
 
-import { Button } from "@/components/ui/button"
+import axios from 'axios';
+import { useState, useEffect } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -13,36 +14,21 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
-import { Card, CardContent,  CardHeader, CardTitle } from "@/components/ui/card"
-import { Heading } from "@/components/Heading"
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Heading } from "@/components/Heading";
+import { useProducts } from "@/hooks/useProducts"; // Import the custom hook
 
-interface Product {
-  productId: string
-  productName: string
-  price: number
-  warrantyPeriodMonths: number
-}
-
-interface SelectedProduct {
-  productId: string
-  productName: string
-  quantity: number
-  price: number
-  totalPrice: number
-  warrantyStart: Date
-  warrantyEnd: Date
-}
-
+// Form Schema
 const formSchema = z.object({
   customerName: z.string().min(2, {
     message: "Customer name must be at least 2 characters.",
@@ -55,92 +41,119 @@ const formSchema = z.object({
   }),
   products: z.array(
     z.object({
-      productId: z.string().min(1, "Please select a product"),
+      _id: z.string().min(1, "Please select a product"),
       quantity: z.number().min(1, "Quantity must be at least 1"),
       warrantyStart: z.date(),
       warrantyEnd: z.date(),
     })
-  )
-  .min(1, "At least one product must be selected."),
-})
+  ),
+});
 
 export default function BillForm() {
-  const [availableProducts, setAvailableProducts] = useState<Product[]>([])
-  const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>([])
-  const [totalAmount, setTotalAmount] = useState<number>(0)
+  const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>([]);
+  const [totalAmount, setTotalAmount] = useState<number>(0);
+
+  const { data: availableProducts, loading, error } = useProducts(); // Use the hook to fetch products
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      customerName: "omkar",
-      phoneNo: "9356875618",
-      email: "reddyrushi427@gmail.com",
+      customerName: "John Doe",
+      phoneNo: "9876543210",
+      email: "john2.doe@example.com",
       products: [],
     },
-  })
-
-  useEffect(() => {
-    // Simulated product fetching from API
-    const products: Product[] = [
-      { productId: "1", productName: "Samsung 8GB DDR4 RAM", price: 3000, warrantyPeriodMonths: 24 },
-      { productId: "2", productName: "Samsung SSD 256GB", price: 4000, warrantyPeriodMonths: 36 },
-    ]
-    setAvailableProducts(products)
-  }, [])
+  });
 
   const addProduct = () => {
     setSelectedProducts([...selectedProducts, {
-      productId: "",
+      _id: "",
       productName: "",
       quantity: 1,
       price: 0,
       totalPrice: 0,
       warrantyStart: new Date(),
-      warrantyEnd: new Date()
-    }])
-  }
+      warrantyEnd: new Date(),
+    }]);
+  };
 
-  const handleProductChange = (index: number, field: string, value) => {
-    const updatedProducts = [...selectedProducts]
-    if (field === "productId") {
-      const product = availableProducts.find((p) => p.productId === value)
+  const handleProductChange = (index: number, field: string, value: any) => {
+    const updatedProducts = [...selectedProducts];
+
+    if (field === "_id") {
+      const product = availableProducts?.find((p) => p._id === value);
       if (product) {
-        const warrantyEndDate = new Date()
-        warrantyEndDate.setMonth(warrantyEndDate.getMonth() + product.warrantyPeriodMonths)
+        const warrantyEndDate = new Date();
+        warrantyEndDate.setMonth(warrantyEndDate.getMonth() + product.warrantyPeriodMonths);
         updatedProducts[index] = {
-          productId: product.productId,
-          productName: product.productName,
+          _id: product._id,
+          productName: product.name,
           quantity: updatedProducts[index].quantity,
           price: product.price,
           totalPrice: updatedProducts[index].quantity * product.price,
           warrantyStart: new Date(),
           warrantyEnd: warrantyEndDate,
-        }
+        };
       }
     } else if (field === "quantity") {
-      updatedProducts[index].quantity = value
-      updatedProducts[index].totalPrice = value * updatedProducts[index].price
+      updatedProducts[index].quantity = value;
+      updatedProducts[index].totalPrice = value * updatedProducts[index].price;
     }
-    setSelectedProducts(updatedProducts)
-  }
+
+    setSelectedProducts(updatedProducts);
+  };
 
   const removeProduct = (index: number) => {
-    const updatedProducts = selectedProducts.filter((_, i) => i !== index)
-    setSelectedProducts(updatedProducts)
-  }
+    const updatedProducts = selectedProducts.filter((_, i) => i !== index);
+    setSelectedProducts(updatedProducts);
+  };
 
   useEffect(() => {
-    const total = selectedProducts.reduce((sum, product) => sum + product.totalPrice, 0)
-    setTotalAmount(total)
-  }, [selectedProducts])
+    const total = selectedProducts.reduce((sum, product) => sum + product.totalPrice, 0);
+    setTotalAmount(total);
+  }, [selectedProducts]);
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Bill Created", { ...values, selectedProducts, totalAmount })
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (selectedProducts.length === 0) {
+      alert(`Please add at least one product to the bill.`);
+      return;
+    }
+
+    // Prepare the final payload
+    const payload = {
+      customerName: values.customerName,
+      phoneNo: values.phoneNo,
+      email: values.email,
+      products: selectedProducts.map(product => ({
+        _id: product._id,
+        quantity: product.quantity,
+        warrantyStart: product.warrantyStart,
+        warrantyEnd: product.warrantyEnd,
+        productName: product.productName, // Add productName for the API
+        price: product.price,
+        totalPrice: product.totalPrice,
+      })),
+    };
+
+    try {
+      // Make the API call using axios
+      const res = await axios.post('/api/bill', payload); // Added '/api' to match your endpoint
+
+      if (res.status === 200 || res.status === 201) {
+        alert('Bill created successfully!');
+        // Optionally reset form or clear selected products here
+      } else {
+        alert(`Failed to create bill. Status code: ${res.status}`);
+      }
+    } catch (error) {
+      console.error('Error submitting bill:', error);
+      alert('An unexpected error occurred. Please try again.');
+    }
   }
 
   return (
     <div className="container mx-auto p-4 max-w-4xl">
-      <Heading title='Create Bill' description='generate bill for customer' />
+      <Heading title='Create Bill' description='Generate bill for customer' />
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl font-bold">Create Bill</CardTitle>
@@ -148,6 +161,7 @@ export default function BillForm() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              {/* Customer Details */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <FormField
                   control={form.control}
@@ -192,11 +206,16 @@ export default function BillForm() {
 
               <Separator />
 
+              {/* Product Selection */}
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <h3 className="text-xl font-semibold">Products</h3>
                   <Button type="button" onClick={addProduct}>Add Product</Button>
                 </div>
+
+                {loading && <p>Loading products...</p>}
+                {error && <p>Error loading products: {error}</p>}
+
                 <div className="grid grid-cols-1 md:grid-cols-6 gap-4 font-semibold">
                   <div className="md:col-span-2">Product</div>
                   <div>Quantity</div>
@@ -208,16 +227,16 @@ export default function BillForm() {
                   <div key={index} className="grid grid-cols-1 md:grid-cols-6 gap-4 items-center">
                     <div className="md:col-span-2">
                       <Select
-                        value={product.productId}
-                        onValueChange={(value) => handleProductChange(index, "productId", value)}
+                        value={product._id}
+                        onValueChange={(value) => handleProductChange(index, "_id", value)}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select Product" />
                         </SelectTrigger>
                         <SelectContent>
-                          {availableProducts.map((prod) => (
-                            <SelectItem key={prod.productId} value={prod.productId}>
-                              {prod.productName} - ₹{prod.price}
+                          {availableProducts?.map((p) => (
+                            <SelectItem key={p?._id} value={p?._id}>
+                              {p?.name} - {p?.brand} - ₹{p?.price}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -238,13 +257,13 @@ export default function BillForm() {
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
-
                   </div>
                 ))}
               </div>
 
               <Separator />
 
+              {/* Total Amount */}
               <div className="flex justify-between items-center">
                 <h3 className="text-xl font-semibold">Total Amount</h3>
                 <p className="text-2xl font-bold">₹{totalAmount}</p>
@@ -256,5 +275,5 @@ export default function BillForm() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

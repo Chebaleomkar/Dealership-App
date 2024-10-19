@@ -6,6 +6,10 @@ const billSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        customerId :{
+            type:String,
+            required:true,
+        },
         phoneNo: {
             type: String,
             required: true,
@@ -14,9 +18,14 @@ const billSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        billNo:{
+            type:String,
+            required:true,
+            unique:true
+        },
         products: [
             {
-                productId: {
+                _id: {
                     type: mongoose.Schema.Types.ObjectId,
                     ref: "Product",
                     required: true,
@@ -24,6 +33,11 @@ const billSchema = new mongoose.Schema(
                 productName: {
                     type: String,
                     required: true,
+                },
+                serialNumbers: {
+                    type: String,
+                    required: true,
+                    unique: true
                 },
                 quantity: {
                     type: Number,
