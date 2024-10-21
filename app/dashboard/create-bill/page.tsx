@@ -51,6 +51,18 @@ const formSchema = z.object({
   ),
 });
 
+interface SelectedProduct {
+  _id: string;
+  productName: string;
+  quantity: number;
+  price: number;
+  totalPrice: number;
+  warrantyStart: Date;
+  warrantyEnd: Date;
+  warrantyPeriodMonths: number;
+  category: string;
+}
+
 export default function BillForm() {
   const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>([]);
   const [totalAmount, setTotalAmount] = useState<number>(0);

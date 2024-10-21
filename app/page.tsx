@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button";
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-gray-50">
@@ -7,11 +9,14 @@ export default function Home() {
           <h1 className="text-4xl font-bold text-center">Computer Shope</h1>
           <p className="text-center text-lg mt-2">Your Trusted Partner for Computer Components</p>
         </div>
-      </header>
+      </header> 
+
+      <div className="flex items-center justify-center">
+        <Button>Go To Dashboard</Button>
+      </div>
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-12">
-        
         {/* Our Services Section */}
         <section id="services" className="mb-12">
           <h2 className="text-3xl font-semibold text-gray-800 text-center">Our Services</h2>
